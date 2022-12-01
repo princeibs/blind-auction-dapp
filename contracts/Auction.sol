@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract Auction {
     struct Bid {
         bytes32 blindedBid;
@@ -34,7 +36,7 @@ contract Auction {
     }
 
     modifier onlyAfter(uint256 time) {
-        if (block.timestamp <= time) revert TooEarly(block.timestamp - time);
+        if (block.timestamp <= time) revert TooEarly(time - block.timestamp);
         _;
     }
 
