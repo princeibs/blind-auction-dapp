@@ -2,7 +2,7 @@
 
 # Blind Auction Decentralised Application (DApp)
 
-A blind auction dapp is an is an auction dapp with a lot of similarities to regular [auction applications](https://en.wikipedia.org/wiki/Auction). The main difference is that the bids placed by the users and cryptographically secured so that nobody, except the user placing the bid knows the bid amount.
+A blind auction dapp is an is an auction dapp with a lot of similarities to regular [auction applications](https://en.wikipedia.org/wiki/Auction). **The main difference is that the bids placed by the users and cryptographically secured so that nobody, except the user placing the bid knows the bid amount.**
 
 ## How does it work?
 
