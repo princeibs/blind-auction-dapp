@@ -150,20 +150,50 @@ describe("Auction", function () {
             })
         })  
         describe("auctionEnd", function() {
-            // it("Should fail if called before reveal time ends", async function () {                                                
-            // })
-            // it("Should end the auction", async function () {
-                
-            // })
-            // it("Should fail if called when auction has ended", async function () {
-                
-            // })
-            // it("Should transfer the right amount to the beneficiary", async function () {
-                
-            // })
-            // it("Should emit the right event", async function () {
-                
-            // })
+            it("Should fail if called before reveal time ends", async function () {  
+                const {auction} = await loadFixture(deployFixture)
+                await expect(auction.auctionEnd()).to.be.revertedWithCustomError(auction, "TooEarly").withArgs(anyValue)
+            })
+            it("Should end the auction", async function () {
+                const {auction} = await loadFixture(deployFixture);
+                await time.increaseTo(await auction.revealEnd());
+                await expect(await auction.auctionEnd()).to.not.be.reverted;
+            })
+            it("Should fail if called when auction has ended", async function () {
+                const {auction} = await loadFixture(deployFixture);
+                await time.increaseTo(await auction.revealEnd());
+                await auction.auctionEnd();
+                // calling `auctionEnd` function the second time
+                await expect(auction.auctionEnd()).to.be.revertedWithCustomError(auction, "AuctionEndAlreadyCalled")
+            })
+            it("Should transfer the right amount to the beneficiary", async function () {
+                const {auction, acc1, beneficiary} = await loadFixture(deployFixture);        
+                const [val, fake] = ["5", false];
+                const bigValue = ethers.utils.parseUnits(val);
+                const blindedBid = await auction.blindABid(val, fake);
+                await auction.connect(acc1).bid(blindedBid, {value: bigValue})
+                // `TIME_IN` seconds into the reveal time
+                await time.increaseTo(Number(await auction.biddingEnd()) + TIME_IN);
+                await auction.connect(acc1).reveal([val], [fake])
+                // `TIME_IN` seconds after the reveal time
+                await time.increaseTo(Number(await auction.revealEnd()) + TIME_IN);
+
+                await expect(await auction.auctionEnd()).to.changeEtherBalance(beneficiary, ethers.BigNumber.from(bigValue));
+            })
+            it("Should emit the right event", async function () {
+                const {auction, acc1, beneficiary} = await loadFixture(deployFixture);        
+                const [val, fake] = ["5", false];
+                const bigValue = ethers.utils.parseUnits(val);
+                const blindedBid = await auction.blindABid(val, fake);
+                await auction.connect(acc1).bid(blindedBid, {value: bigValue})
+                // `TIME_IN` seconds into the reveal time
+                await time.increaseTo(Number(await auction.biddingEnd()) + TIME_IN);
+                await auction.connect(acc1).reveal([val], [fake])
+                // `TIME_IN` seconds after the reveal time
+                await time.increaseTo(Number(await auction.revealEnd()) + TIME_IN);
+
+                await expect(await auction.auctionEnd()).to.emit(auction, "AuctionEnded").withArgs(acc1.address, ethers.BigNumber.from(bigValue))
+            })
         })
     })
 })
