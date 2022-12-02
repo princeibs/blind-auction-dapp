@@ -51,6 +51,7 @@ describe("Auction", function () {
                 const {auction} = await loadFixture(deployFixture);
                 const [value, fake] = [5, false];
                 const bigValue = ethers.utils.parseUnits(ethers.BigNumber.from(value).toString())
+                // ethers.utils.solidityKeccak256 equivalent to keccak256(abi.encodePacked(...args)) in solidity
                 const blindedBid = ethers.utils.solidityKeccak256(["uint256", "bool"], [bigValue, fake])               
 
                 expect(await auction.blindABid(value, fake)).to.equal(blindedBid);
