@@ -19,7 +19,7 @@ describe("Auction", function () {
         const {auction, acc1} = await loadFixture(deployFixture);        
         const [val, fake] = ["5", false];
         const bigValue = ethers.utils.parseUnits(val);
-        const blindedBid = await auction.blindABid(val, fake);
+        const blindedBid = await auction.blindBid(val, fake);
         await auction.connect(acc1).bid(blindedBid, {value: bigValue})
 
         return {auction, acc1, val, fake}
@@ -46,7 +46,7 @@ describe("Auction", function () {
     })
 
     describe("Functions", function () {
-        describe("blindABid", function () {
+        describe("blindBid", function () {
             it("Should correctly blind a bid", async function () {
                 const {auction} = await loadFixture(deployFixture);
                 const [value, fake] = [5, false];
@@ -54,7 +54,7 @@ describe("Auction", function () {
                 // ethers.utils.solidityKeccak256 equivalent to keccak256(abi.encodePacked(...args)) in solidity
                 const blindedBid = ethers.utils.solidityKeccak256(["uint256", "bool"], [bigValue, fake])               
 
-                expect(await auction.blindABid(value, fake)).to.equal(blindedBid);
+                expect(await auction.blindBid(value, fake)).to.equal(blindedBid);
             })
         })
         describe("bid", function () {
@@ -64,7 +64,7 @@ describe("Auction", function () {
                 await time.increaseTo(biddingEndTime);
                 const [val, fake] = ["5", false];
                 const bigValue = ethers.utils.parseUnits(val);
-                const blindedBid = await auction.blindABid(val, fake);
+                const blindedBid = await auction.blindBid(val, fake);
 
                 await expect(auction.bid(blindedBid, {value: bigValue})).to.be.revertedWithCustomError(auction, "TooLate");
             })
@@ -72,7 +72,7 @@ describe("Auction", function () {
                 const {auction, acc1} = await loadFixture(deployFixture);
                 const [val, fake] = ["5", false];
                 const bigValue = ethers.utils.parseUnits(val); // convert `val` to ether value
-                const blindedBid = await auction.blindABid(val, fake)  // blind bid and return bytes32 string
+                const blindedBid = await auction.blindBid(val, fake)  // blind bid and return bytes32 string
                 await auction.connect(acc1).bid(blindedBid, {value: bigValue})// place a new bid
                 const createdBid = await auction.bids(acc1.address, 0); // get bid values
 
@@ -109,7 +109,7 @@ describe("Auction", function () {
                 const {auction, acc1} = await loadFixture(deployFixture);        
                 const [val, fake] = ["5", false];
                 const bigValue = ethers.utils.parseUnits("8"); // extra 3 ether will be returned during reveal phase
-                const blindedBid = await auction.blindABid(val, fake);
+                const blindedBid = await auction.blindBid(val, fake);
                 await expect(await auction.connect(acc1).bid(blindedBid, {value: bigValue})).to.changeEtherBalance(acc1, ethers.BigNumber.from(ethers.utils.parseUnits("-8")))                
 
                 await time.increaseTo(Number(await auction.biddingEnd()) + TIME_IN);
@@ -122,8 +122,8 @@ describe("Auction", function () {
                 const [acc1Val, acc1Fake, acc2Val, acc2Fake] = ["5", false, "7", false];
                 const bigValue1 = ethers.utils.parseUnits(acc1Val);
                 const bigValue2 = ethers.utils.parseUnits(acc2Val);
-                const blindedBid1 = await auction.blindABid(acc1Val, acc1Fake);
-                const blindedBid2 = await auction.blindABid(acc2Val, acc2Fake);
+                const blindedBid1 = await auction.blindBid(acc1Val, acc1Fake);
+                const blindedBid2 = await auction.blindBid(acc2Val, acc2Fake);
 
                 // Account 1 and Account 2 place bids (Account 2 placed the highest)
                 await auction.connect(acc1).bid(blindedBid1, {value: bigValue1})
@@ -171,7 +171,7 @@ describe("Auction", function () {
                 const {auction, acc1, beneficiary} = await loadFixture(deployFixture);        
                 const [val, fake] = ["5", false];
                 const bigValue = ethers.utils.parseUnits(val);
-                const blindedBid = await auction.blindABid(val, fake);
+                const blindedBid = await auction.blindBid(val, fake);
                 await auction.connect(acc1).bid(blindedBid, {value: bigValue})
                 // `TIME_IN` seconds into the reveal time
                 await time.increaseTo(Number(await auction.biddingEnd()) + TIME_IN);
@@ -185,7 +185,7 @@ describe("Auction", function () {
                 const {auction, acc1, beneficiary} = await loadFixture(deployFixture);        
                 const [val, fake] = ["5", false];
                 const bigValue = ethers.utils.parseUnits(val);
-                const blindedBid = await auction.blindABid(val, fake);
+                const blindedBid = await auction.blindBid(val, fake);
                 await auction.connect(acc1).bid(blindedBid, {value: bigValue})
                 // `TIME_IN` seconds into the reveal time
                 await time.increaseTo(Number(await auction.biddingEnd()) + TIME_IN);
