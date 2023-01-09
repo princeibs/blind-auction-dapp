@@ -13,6 +13,28 @@ async function main() {
   await auction.deployed();
 
   console.log("Auction contract deployed to: " + auction.address)
+  storeContractData(auction)
+}
+
+function storeContractData(contract) {
+  const fs = require("fs");
+  const contractsDir = __dirname + "/../src/contracts";
+
+  if (!fs.existsSync(contractsDir)) {
+    fs.mkdirSync(contractsDir);
+  }
+
+  fs.writeFileSync(
+    contractsDir + "/Auction-address.json",
+    JSON.stringify({ Auction: contract.address }, undefined, 2)
+  );
+
+  const artifacts = hre.artifacts.readArtifactSync("Auction"); 
+
+  fs.writeFileSync(
+    contractsDir + "/Auction.json",
+    JSON.stringify(artifacts, null, 2)
+  );
 }
 
 main().catch((error) => {
