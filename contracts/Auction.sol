@@ -57,7 +57,6 @@ contract Auction {
         _;
     }
 
-    /// @notice sSd
     /// @param _biddingDuration time in seconds which the bidding phase lasts
     /// @param _revealDuration time in seconds which the reveal phase lasts
     /// @param _beneficiary address of auction beneficiary
@@ -162,5 +161,12 @@ contract Auction {
         owner.transfer(bal);
     }
 
+    fallback() external payable {
+        revert();
+    }
+
+    receive() external payable {
+        revert();
+    }
 
 }
