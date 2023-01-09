@@ -102,7 +102,7 @@ contract Auction {
         for (uint256 i = 0; i < length; i++) {
             Bid storage bidToCheck = bids[msg.sender][i];
             (uint256 value, bool fake) = (values[i], fakes[i]);
-            value = value * (1 ether);
+            uint256 bigValue = value * (1 ether);
             if (bidToCheck.blindedBid != blindBid(value, fake)) {
                 // Bid was not correctly revealed
                 // Burn deposit
@@ -111,9 +111,9 @@ contract Auction {
             refund += bidToCheck.deposit;
             // Bid should not be fake
             // Deposited ether should not be less than proposed bid value
-            if (!fake && bidToCheck.deposit >= value) {
-                if (placeBid(msg.sender, value))
-                    refund -= value;
+            if (!fake && bidToCheck.deposit >= bigValue) {
+                if (placeBid(msg.sender, bigValue))
+                    refund -= bigValue;
             }
             // Delete bid
             bidToCheck.blindedBid = bytes32(0);
